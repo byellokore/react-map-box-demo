@@ -7,31 +7,40 @@ export default class Map extends Component {
         super(props);
 
         this.state = {
+            api_url: 'https://data.edmonton.ca/resource/87ck-293k.json',
             viewport: {
                 width: 800,
                 height: 400,
                 zoom: 8,
-                latitude:-30.0305,
-                longitude: -51.1210
+                latitude:54.5444,
+                longitude: -113.4989
             },
-            coords: [
-                {latitude: -30.0305, longitude: -51.1205},
-                {latitude: -31.0305, longitude: -51.1205},
-                {latitude: -30.0405, longitude: -52.1205},
-            ],
+            data: null,
             token: process.env.REACT_APP_MAPBOX_ACCESS_TOKEN
         };
     }
 
+    componentDidMount(){
+        const { data, api_url } = this.state;
+        if (!data){
+            fetch(api_url, {method: 'GET'})
+            .then(response => response.json())
+            .then(response => this.setState({ data: response }));
+        }
+    }
+
     render() {
-        const { coords } = this.state;
+        const { data } = this.state;
         return (
             <ReactMapGL
             mapboxApiAccessToken={this.state.token}
             {...this.state.viewport}
             onViewportChange={(viewport) => this.setState({viewport})}>
-            { coords.map(coord => (
-                <Marker latitude={coord.latitude} longitude={coord.longitude}>
+            {data && data.map((coord,i) => (
+                <Marker 
+                key={i} 
+                latitude={parseFloat(coord.location.latitude)} 
+                longitude={parseFloat(coord.location.longitude)}>
                     <Pin />
                 </Marker>
             ))}    
