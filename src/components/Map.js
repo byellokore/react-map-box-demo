@@ -14,19 +14,28 @@ export default class Map extends Component {
                 latitude:-30.0305,
                 longitude: -51.1210
             },
+            coords: [
+                {latitude: -30.0305, longitude: -51.1205},
+                {latitude: -31.0305, longitude: -51.1205},
+                {latitude: -30.0405, longitude: -52.1205},
+            ],
             token: process.env.REACT_APP_MAPBOX_ACCESS_TOKEN
-        }
-    };
+        };
+    }
 
     render() {
+        const { coords } = this.state;
         return (
-            <ReactMapGL 
+            <ReactMapGL
             mapboxApiAccessToken={this.state.token}
             {...this.state.viewport}
             onViewportChange={(viewport) => this.setState({viewport})}>
-            <Marker latitude={-30.0305} longitude={-51.1211}>
-                <Pin />
-            </Marker>
+            { coords.map(coord => (
+                <Marker latitude={coord.latitude} longitude={coord.longitude}>
+                    <Pin />
+                </Marker>
+            ))}    
+
             </ReactMapGL>
         );
     }
