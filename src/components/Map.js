@@ -34,8 +34,8 @@ export default class Map extends Component {
                     "data": this.state.data
                 },
                 "paint": {
-                    "circle-radius": 5,
-                    "circle-color": "#B4D455"
+                    "circle-radius": 6,
+                    "circle-color": "#C4" + Math.floor((Math.random() * 10000) + 1)
                 }
             })
         });
@@ -43,6 +43,26 @@ export default class Map extends Component {
         map.on('click', 'points', (e) => {
             const coordinates = e.features[0].geometry.coordinates.slice();
             const { details, description, impact, duration  } = e.features[0].properties;
+            while (Math.abs(e.lngLat.lng - coordinates[0]) > 180) { 
+                coordinates[0] += e.lngLat.lng > coordinates[0] ? 360 : -360;
+            }
+
+            new MapboxGL.Popup()
+                .setLngLat(coordinates)
+                .setHTML(`
+                    <strong>${description}</strong><br />
+                    <em>${impact}</em><br />
+                    <p>${details}</p>
+                `)
+                .addTo(map);
+        });
+
+        map.on('mouseenter', 'points', () => {
+            map.getCanvas().style.cursor = 'pointer';
+        });
+
+        map.on('mouseleave', 'points', () => {
+            map.getCanvas().style.cursor = '';
         });
 
         return { map };
