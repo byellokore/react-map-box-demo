@@ -7,22 +7,20 @@ export default class Map extends Component {
         super(props);
 
         this.state = {
-            api_url: 'https://data.edmonton.ca/resource/87ck-293k.json',
             map: false,
             viewport: {
                 zoom: 10,
                 center: [ -113.4909, 53.5444]
-            },
-            data: null
+            }
         };
     }
 
-    initializeMap(){
+    static initializeMap(state, viewport){
         MapboxGL.accessToken = process.env.REACT_APP_MAPBOX_ACCESS_TOKEN
         let map = new MapboxGL.Map({
             container: 'map',
             style: 'mapbox://styles/mapbox/light-v9',
-            ...this.state.viewport
+            ...viewport
         });
 
         map.on('load', () => {
@@ -31,11 +29,19 @@ export default class Map extends Component {
                 "type": "circle",
                 "source": {
                     "type": "geojson",
-                    "data": this.state.data
+                    "data": state.data
                 },
                 "paint": {
                     "circle-radius": 6,
-                    "circle-color": "#C4" + Math.floor((Math.random() * 10000) + 1)
+                    "circle-color": [
+                        'match',
+                        ['get', 'impact'],
+                        'Increased Travel Time', '#B5b03b',
+                        'Total Closure','#dc3545',
+                        'Travel Delays','#ffc107',
+                        'Major Delays', '#343a40',
+                        '#ccc'
+                    ]
                 }
             })
         });
@@ -68,46 +74,13 @@ export default class Map extends Component {
         return { map };
     }
 
-    createFeaturaCollect(data){
-        let features = [];
-        data.forEach(point => {
-            features.push({
-                "type":"Feature",
-                "geometry": {
-                    "type": "Point",
-                    "coordinates": [
-                        parseFloat(point.location.longitude),
-                        parseFloat(point.location.latitude)
-                    ]
-                },
-                "properties": {
-                    "description": point.description,
-                    "details": point.details,
-                    "duration": point.duration,
-                    "impact": point.impact
-                }
-            })
-        });
-
-        return {
-            "type": "FeatureCollection",
-            "features": features
-        }
-    }
-
-    componentDidMount(){
-        const { data, api_url } = this.state;
-        if (!data){
-            fetch(api_url, {method: 'GET'})
-            .then(response => response.json())
-            .then(response => this.createFeaturaCollect(response))
-            .then(response => this.setState({ data: response }));
-        }
+    static getDerivedStateFromProps(nextProps, prevState){
+        const { map, data } = nextProps;
+        if (data && !map) return Map.initializeMap(nextProps, prevState.viewport);
+        else return null;
     }
 
     render() {
-        const { map, data } = this.state;
-        if (data && !map) this.initializeMap();
         return (
             <div style={{width: 1100, height: 600}} id="map" />
         );
