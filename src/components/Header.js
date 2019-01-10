@@ -46,7 +46,7 @@ class Header extends Component {
         <Navbar>
             <StyledLogo src={Logo} />
             <StyledHeader>{count || ''} Traffics incidents</StyledHeader>
-        </Navbar>
+         </Navbar>
         );      
     }
 
