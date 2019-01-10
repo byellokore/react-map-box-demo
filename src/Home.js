@@ -28,9 +28,10 @@ class Home extends Component {
 
   render() {
     const { data } = this.props.API;
+    const count = data && data.features.length;
     return (
       <div className="Home">
-        <Header appName={this.state.applicationName}/>
+        <Header count={count} appName={this.state.applicationName}/>
         
         <Container>
           <Map data={data} />

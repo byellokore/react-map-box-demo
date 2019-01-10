@@ -1,5 +1,7 @@
 import React, { Component } from 'react';
-import { 
+import styled, {injectGlobal} from 'styled-components';
+import Logo from '../trilist-logo.png';
+/*import { 
     Collapse,
     Navbar,
     NavbarToggler,
@@ -7,34 +9,43 @@ import {
     Nav,
     NavItem,
     NavLink,
-} from 'reactstrap';
-class Header extends Component {
-    constructor(props){
-        super(props);
+} from 'reactstrap';*/
 
-        this.toggle = this.toggle.bind(this);
-        this.state = {
-            isOpen: false
-        }
+injectGlobal`
+    body {
+        background-color: #F1F1F1;
     }
-    
-    toggle() {
-        this.setState({
-            isOpen: !this.state.isOpen
-        });
-    }
+`;
+
+
+const Navbar = styled.div `
+    background-color: #FFFFFF;
+    color: #333;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid rgba(0,0,0,0.2);
+    padding: 5px;
+    margin-bottom: 25px;
+`;
+
+const StyledLogo = styled.img`
+    width: auto;
+    height: 65px;
+`;
+
+const StyledHeader = styled.h4`
+    color: #EEEEE;
+    text-shadow: 1px 1px 0px rgba(0,0,0,0.2);
+    margin-right: 10px;
+`;
+class Header extends Component {
     render(){
+        const {count} = this.props;
         return(
-        <Navbar color="light" light expand="md">
-            <NavbarBrand href="/">{this.props.appName}</NavbarBrand>
-            <NavbarToggler onClick={this.toggle} />
-            <Collapse isOpen={this.state.isOpen} navbar>
-            <Nav className="ml-auto" navbar>
-                <NavItem>
-                <NavLink href="/components/">1,000 Incidents</NavLink>
-                </NavItem>
-            </Nav>
-            </Collapse>
+        <Navbar>
+            <StyledLogo src={Logo} />
+            <StyledHeader>{count || ''} Traffics incidents</StyledHeader>
         </Navbar>
         );      
     }
